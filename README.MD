@@ -1,0 +1,1 @@
+Converts normal rgb footage into a point cloud stream by applying monocular depth prediction (https://github.com/isl-org/MiDaS). 
