@@ -44,7 +44,7 @@ def pred_inverse_depth(model, transform, rgb, device):
             size=rgb.shape[:2],
             mode="bicubic",
             align_corners=False,
-        ).squeeze().clamp(min=0).numpy()
+        ).squeeze().clamp(min=0).cpu().numpy()
         # plt.imshow(output)
         # plt.show()
         return prediction
