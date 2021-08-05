@@ -11,8 +11,7 @@ import open3d as o3d
 IMAGE_SIZE = (1280, 720)
 DEPTH_TRUNC = 0.5
 FOCAL_LENGTH = 2772  # width / (np.tan(np.deg2rad(26mm) / 2) * 2),  # not sure if we should multiply with 2, also this value depends on pixel size
-# FRAME_RATE # TODO add framerate option
-
+EVERY_N_FRAME = 1
 
 def prep_model():
     model_type = "DPT_Large"  # MiDaS v3 - Large     (highest accuracy, slowest inference speed)
@@ -94,13 +93,15 @@ def main():
     model, transform, device = prep_model()
 
     for idx, rgb in enumerate(skvideo.io.vreader(str(video_path))):
-        rgb = np.asarray(Image.fromarray(rgb).resize(IMAGE_SIZE))  # TODO try different sizes
+        if idx % EVERY_N_FRAME != 0:
+            continue
+
+        rgb = np.asarray(Image.fromarray(rgb).resize(IMAGE_SIZE))
         depth_pred = pred_inverse_depth(model, transform, rgb, device)
         pc = compute_pc_from_rgb_depth(rgb, depth_pred)
         out_str = str(idx).zfill(6)
-        o3d.io.write_point_cloud(str(output_folder/f'{out_str}.ply'), pc)
+        o3d.io.write_point_cloud(str(output_folder / f'{out_str}.ply'), pc)
 
 
 if __name__ == '__main__':
-    # TODO convert to google colab, add to git
     main()
